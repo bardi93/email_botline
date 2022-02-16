@@ -13,7 +13,6 @@ from thrift.protocol import TCompactProtocol
 from thrift.transport import THttpClient
 from akad.ttypes import LoginRequest
 from datetime import datetime, timedelta
-import concurrent.futures
 from threading import Thread
 from io import StringIO
 from multiprocessing import Pool
@@ -105,13 +104,12 @@ class Bardiansyah1(object):
         except Exception as error:
                 print (error)
     def run1(self):
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            while True:
-                try:
-                    ops = self.oepoll.singleTrace(count=50)
-                    if ops != None:
-                        for op in ops:
-                            executor.submit(self.receive_message,op)
-                            self.oepoll.setRevision(op.revision)
-                except Exception as e:
-                    print(e)
+        while True:
+            try:
+                ops=self.oepoll.singleTrace(count=50)
+                if ops != None:
+                    for op in ops:
+                        self.receive_message(op)
+                        self.oepoll.setRevision(op.revision)
+            except Exception as e:
+                print(e)
